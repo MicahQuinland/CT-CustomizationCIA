@@ -1,5 +1,5 @@
 ---
-# Home region for CodePipeline, StepFunctions, Lambda, SSM, StackSets
+# Home region for CodePipeline, StepFunctions, Lambda, SSM, StackSets.
 region: us-east-1  # Control Tower Home Region
 version: 2021-03-15
 
