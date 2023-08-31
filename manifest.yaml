@@ -20,17 +20,17 @@ resources:
   #       #- Core
   #       #- Custom
 
-  # ControlTower Custom CFN Resources - Create Additional IAM Role
-  - name: create-iam-role
-    resource_file: s3://marketplace-sa-resources-ct-us-east-1/ctlabs/describe-regions-iam-role.template
-    deploy_method: stack_set
-    deployment_targets:
-      organizational_units:
-        # New Essential OU names since ControlTower v2.7 April 16.
-        # Observe the names of your existing OUs and comment out or uncomment these to match yours.
-        - Security # Foremerly Core
-        - Sandbox # Formerly Custom
-        #- Core
-        #- Custom
-    regions:
-      - us-east-1
+  # # ControlTower Custom CFN Resources - Create Additional IAM Role
+  # - name: create-iam-role
+  #   resource_file: s3://marketplace-sa-resources-ct-us-east-1/ctlabs/describe-regions-iam-role.template
+  #   deploy_method: stack_set
+  #   deployment_targets:
+  #     organizational_units:
+  #       # New Essential OU names since ControlTower v2.7 April 16.
+  #       # Observe the names of your existing OUs and comment out or uncomment these to match yours.
+  #       - Security # Foremerly Core
+  #       - Sandbox # Formerly Custom
+  #       #- Core
+  #       #- Custom
+  #   regions:
+  #     - us-east-1
