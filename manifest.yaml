@@ -5,6 +5,22 @@ version: 2021-03-15
 enable_stack_set_deletion: true
 
 resources:
+
+  - name: rdk-deploy-role
+    resource_file: templates/rdk-role.yml
+    parameters:
+      - parameter_key: LambdaAccountId
+        parameter_value: 564707250760
+    deploy_method: stack_set
+    deployment_targets:
+      organizational_units:
+        - Shared Services
+        - Security
+        - Sandbox
+    regions:
+      - us-east-1
+
+
   # # ControlTower Custom SCPs - Additional Preventive Guardrails
   # - name: test-preventive-guardrails
   #   description: Prevent deleting or disabling resources in member accounts
