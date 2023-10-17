@@ -12,5 +12,5 @@ Resources:
         Properties:
           OrganizationConformancePackName: !Ref ConformancePackName
           TemplateS3Uri: !Ref TemplateS3Uri
-          # ExcludedAccounts: 
-          #   - String
+          ExcludedAccounts: 
+            - 869465339841
