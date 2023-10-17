@@ -28,7 +28,6 @@ resources:
         - Sandbox
     regions:
       - us-east-1
-      - us-west-2
 
 
   # # ControlTower Custom SCPs - Additional Preventive Guardrails
