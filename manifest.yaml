@@ -2,23 +2,33 @@
 # Home region for CodePipeline, StepFunctions, Lambda, SSM, StackSets.
 region: us-east-1  # Control Tower Home Region
 version: 2021-03-15
-enable_stack_set_deletion: true
+enable_stack_set_deletion: false
 
 resources:
+
+  - name: config-aggregator
+    resource_file: templates/config-org-aggregator.yaml
+    deploy_method: stack_set
+    deployment_targets:
+      accounts: 
+        - 423596826538
+    regions:
+      - us-east-1
 
   - name: rdk-deploy-role
     resource_file: templates/rdk-role.yml
     parameters:
       - parameter_key: LambdaAccountId
-        parameter_value: 564707250760
+        parameter_value: 423596826538
     deploy_method: stack_set
     deployment_targets:
       organizational_units:
-        - Shared Services
+        - Shared-Services
         - Security
         - Sandbox
     regions:
       - us-east-1
+      - us-west-2
 
 
   # # ControlTower Custom SCPs - Additional Preventive Guardrails
