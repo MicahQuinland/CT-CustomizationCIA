@@ -5,114 +5,36 @@ version: 2021-03-15
 enable_stack_set_deletion: false
 
 resources:
-
-  - name: config-aggregator
-    resource_file: templates/config-org-aggregator.yaml
-    deploy_method: stack_set
-    deployment_targets:
-      accounts: 
-        - 423596826538
-    regions:
-      - us-east-1
-
-  - name: rdk-deploy-role
-    resource_file: templates/rdk-role.yml
-    parameters:
-      - parameter_key: LambdaAccountId
-        parameter_value: 423596826538
-    deploy_method: stack_set
-    deployment_targets:
-      organizational_units:
-        - Shared-Services
-        - Security
-        - Sandbox
-    regions:
-      - us-east-1
-
-  - name: rdk-pipeline
-    resource_file: templates/rdk-pipeline-github-noVPC.yaml
-    deploy_method: stack_set
-    deployment_targets:
-      accounts: 
-        - 423596826538
-    regions:
-      - us-east-1
-
-  - name: custom-pack
-    resource_file: templates/conformance-pack-template.yaml
-    parameters:
-      - parameter_key: LambdaAccountId
-        parameter_value: 423596826538
-      - parameter_key: ConformancePackName
-        parameter_value: custom-pack1
-      - parameter_key: TemplateS3Uri
-        parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-1v56s42xugqqq/config/custom-env/custom-conforms-pack-template-custom.yaml
-    deploy_method: stack_set
-    deployment_targets:
-      organizational_units:
-        - Sandbox
-    regions:
-      - us-east-1
-      - us-west-2
-
-  - name: managed-pack
-    resource_file: templates/conformance-pack-template.yaml
-    parameters:
-      - parameter_key: LambdaAccountId
-        parameter_value: 423596826538
-      - parameter_key: ConformancePackName
-        parameter_value: managed-pack1
-      - parameter_key: TemplateS3Uri
-        parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-1v56s42xugqqq/config/custom-env/custom-conforms-pack-template-managed.yaml
-    deploy_method: stack_set
-    deployment_targets:
-      organizational_units:
-        - Security
-    regions:
-      - us-east-1
-      - us-west-2
-
-  - name: managed-cis-org
-    resource_file: templates/managed-organization-conformance-pack-template.yaml
-    parameters:
-      - parameter_key: ConformancePackName
-        parameter_value: managed-cis-org
-      - parameter_key: TemplateS3Uri
-        parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-1v56s42xugqqq/config/managed-org/Operational-Best-Practices-for-CIS-Critical-Security-Controls-v8-IG3.yaml
-    deploy_method: stack_set
-    deployment_targets:
-      accounts: 
-        - 423596826538
-    regions:
-      - us-east-1
-      - us-west-2
-
-  # # ControlTower Custom SCPs - Additional Preventive Guardrails
-  # - name: test-preventive-guardrails
-  #   description: Prevent deleting or disabling resources in member accounts
-  #   resource_file: s3://marketplace-sa-resources-ct-us-east-1/ctlabs/preventive-guardrails.json
-  #   deploy_method: scp
-  #   # Apply to the following OU(s)
-  #   deployment_targets:
-  #     organizational_units:
-  #       # New Essential OU names since ControlTower v2.7 April 16.
-  #       # Observe the names of your existing OUs and comment out or uncomment below to match yours.
-  #       - Security # Foremerly Core
-  #       - Sandbox # Formerly Custom
-  #       #- Core
-  #       #- Custom
-
-  # # ControlTower Custom CFN Resources - Create Additional IAM Role
-  # - name: create-iam-role
-  #   resource_file: s3://marketplace-sa-resources-ct-us-east-1/ctlabs/describe-regions-iam-role.template
+  # - name: custom-pack
+  #   resource_file: templates/conformance-pack-template.yaml
+  #   parameters:
+  #     - parameter_key: LambdaAccountId
+  #       parameter_value: 423596826538
+  #     - parameter_key: ConformancePackName
+  #       parameter_value: custom-pack1
+  #     - parameter_key: TemplateS3Uri
+  #       parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-1v56s42xugqqq/config/custom-env/custom-conforms-pack-template-custom.yaml
   #   deploy_method: stack_set
   #   deployment_targets:
   #     organizational_units:
-  #       # New Essential OU names since ControlTower v2.7 April 16.
-  #       # Observe the names of your existing OUs and comment out or uncomment these to match yours.
-  #       - Security # Foremerly Core
-  #       - Sandbox # Formerly Custom
-  #       #- Core
-  #       #- Custom
+  #       - Dev
   #   regions:
   #     - us-east-1
+  #     - us-west-2
+
+  # - name: managed-pack
+  #   resource_file: templates/conformance-pack-template.yaml
+  #   parameters:
+  #     - parameter_key: LambdaAccountId
+  #       parameter_value: 423596826538
+  #     - parameter_key: ConformancePackName
+  #       parameter_value: managed-pack1
+  #     - parameter_key: TemplateS3Uri
+  #       parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-1v56s42xugqqq/config/custom-env/custom-conforms-pack-template-managed.yaml
+  #   deploy_method: stack_set
+  #   deployment_targets:
+  #     organizational_units:
+  #       - Dev
+  #   regions:
+  #     - us-east-1
+  #     - us-west-2
