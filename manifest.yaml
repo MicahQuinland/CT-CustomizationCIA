@@ -5,23 +5,6 @@ version: 2021-03-15
 enable_stack_set_deletion: false
 
 resources:
-  # - name: dev-custom-pack
-  #   resource_file: templates/conformance-pack-template.yaml
-  #   parameters:
-  #     - parameter_key: LambdaAccountId
-  #       parameter_value: 423596826538
-  #     - parameter_key: ConformancePackName
-  #       parameter_value: dev-custom-pack1
-  #     - parameter_key: TemplateS3Uri
-  #       parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-19tdcizbmebvg/config/custom-env/custom-conforms-pack-template-custom.yaml
-  #   deploy_method: stack_set
-  #   deployment_targets:
-  #     organizational_units:
-  #       - Dev
-  #   regions:
-  #     - us-east-1
-  #     - us-west-2
-
   - name: dev-managed-pack
     resource_file: templates/conformance-pack-template.yaml
     parameters:
