@@ -276,6 +276,8 @@ Resources:
         rules_to_suppress:
           - id: W51
             reason: "Access intended only within the same account"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       VersioningConfiguration:
         Status: Enabled
@@ -299,6 +301,8 @@ Resources:
             reason: "Access intended only within the same account"
           - id: W35
             reason: "This is a S3 bucket to store access logs from ArtifactBucket."
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       VersioningConfiguration:
         Status: Enabled
