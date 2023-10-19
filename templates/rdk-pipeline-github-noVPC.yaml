@@ -283,11 +283,11 @@ Resources:
         Status: Enabled
       LoggingConfiguration:
         DestinationBucketName: !Ref LoggingBucket
-      PublicAccessBlockConfiguration:
-          BlockPublicAcls: true
-          BlockPublicPolicy: true
-          IgnorePublicAcls: true
-          RestrictPublicBuckets: true
+      # PublicAccessBlockConfiguration:
+      #     BlockPublicAcls: true
+      #     BlockPublicPolicy: true
+      #     IgnorePublicAcls: true
+      #     RestrictPublicBuckets: true
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -306,11 +306,11 @@ Resources:
     Properties:
       VersioningConfiguration:
         Status: Enabled
-      PublicAccessBlockConfiguration:
-          BlockPublicAcls: true
-          BlockPublicPolicy: true
-          IgnorePublicAcls: true
-          RestrictPublicBuckets: true
+      # PublicAccessBlockConfiguration:
+      #     BlockPublicAcls: true
+      #     BlockPublicPolicy: true
+      #     IgnorePublicAcls: true
+      #     RestrictPublicBuckets: true
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
