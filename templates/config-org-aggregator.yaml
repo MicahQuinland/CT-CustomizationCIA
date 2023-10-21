@@ -18,11 +18,11 @@ Resources:
       Type: 'AWS::Config::ConfigurationAggregator'
       Properties:
           OrganizationAggregationSource:
-              RoleArn: !GetAtt ConfigAggregatorRole.Arn
+              RoleArn: !GetAtt NGCConfigAggregatorRole.Arn
               AllAwsRegions: true
           ConfigurationAggregatorName: PWC-demo-ConfigurationAggregator
                 
-  ConfigAggregatorRole:
+  NGCConfigAggregatorRole:
       Type: AWS::IAM::Role
       Properties: 
           ManagedPolicyArns: 
