@@ -41,14 +41,14 @@ resources:
 
 ############
 
-  # - name: config-aggregator
-  #   resource_file: templates/config-org-aggregator.yaml
-  #   deploy_method: stack_set
-  #   deployment_targets:
-  #     accounts: 
-  #       - 423596826538
-  #   regions:
-  #     - us-east-1
+  - name: config-aggregator
+    resource_file: templates/config-org-aggregator.yaml
+    deploy_method: stack_set
+    deployment_targets:
+      accounts: 
+        - 423596826538
+    regions:
+      - us-east-1
 
   # - name: rdk-deploy-role
   #   resource_file: templates/rdk-role.yaml
