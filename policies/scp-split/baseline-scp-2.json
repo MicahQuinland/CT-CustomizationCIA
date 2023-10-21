@@ -19,8 +19,7 @@
         "cloudformation:Update*"
       ],
       "Resource": [
-        "arn:aws:cloudformation:*:*:stack/StackSet-*ControlTower*",
-        "arn:aws:cloudformation:*:*:stack/StackSet-*ControlTower*/*"
+        "arn:aws:cloudformation:*:*:stack/StackSet-*ControlTower*"
       ],
       "Condition": {
         "ArnNotLikeIfExists": {
