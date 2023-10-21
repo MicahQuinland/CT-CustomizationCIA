@@ -25,7 +25,8 @@
         "ArnNotLikeIfExists": {
           "aws:PrincipalARN": [
             "arn:aws:iam::*:role/AWSControlTowerExecution",
-            "arn:aws:iam::*:role/AWSCloudFormationStackSetExecutionRole"
+            "arn:aws:iam::*:role/AWSCloudFormationStackSetExecutionRole",
+            "arn:aws:iam::*:role/*-CustomControlTower*"
           ]
         }
       }

@@ -41,39 +41,58 @@ resources:
 
 ############
 
-  - name: config-aggregator
-    resource_file: templates/config-org-aggregator.yaml
-    deploy_method: stack_set
-    deployment_targets:
-      accounts: 
-        - 423596826538
-    regions:
-      - us-east-1
+  # - name: config-aggregator
+  #   resource_file: templates/config-org-aggregator.yaml
+  #   deploy_method: stack_set
+  #   deployment_targets:
+  #     accounts: 
+  #       - 423596826538
+  #   regions:
+  #     - us-east-1
 
-  - name: rdk-deploy-role
-    resource_file: templates/rdk-role.yaml
-    parameters:
-      - parameter_key: LambdaAccountId
-        parameter_value: 423596826538
-    deploy_method: stack_set
-    deployment_targets:
-      organizational_units:
-        - Sandbox
-        - Security
-        - Dev
-        - Shared-Services
+  # - name: rdk-deploy-role
+  #   resource_file: templates/rdk-role.yaml
+  #   parameters:
+  #     - parameter_key: LambdaAccountId
+  #       parameter_value: 423596826538
+  #   deploy_method: stack_set
+  #   deployment_targets:
+  #     organizational_units:
+  #       - Sandbox
+  #       - Security
+  #       - Dev
+  #       - Shared-Services
         
-    regions:
-      - us-east-1
+  #   regions:
+  #     - us-east-1
 
-  - name: rdk-pipeline
-    resource_file: templates/rdk-pipeline-github-noVPC.yaml
-    deploy_method: stack_set
-    deployment_targets:
-      accounts: 
-        - 423596826538
-    regions:
-      - us-east-1
+  # - name: rdk-pipeline
+  #   resource_file: templates/rdk-pipeline-github-noVPC.yaml
+  #   deploy_method: stack_set
+  #   deployment_targets:
+  #     accounts: 
+  #       - 423596826538
+  #   regions:
+  #     - us-east-1
+
+  # - name: regional-fms
+  #   resource_file: templates/waf/fms-waf-alb-apigw.yaml
+  #   deploy_method: stack_set
+  #   deployment_targets:
+  #     accounts: 
+  #       - 423596826538
+  #   regions:
+  #     - us-east-1
+  #     - us-west-2
+
+  # - name: global-fms
+  #   resource_file: templates/waf/fms-waf-cloudfront.yaml
+  #   deploy_method: stack_set
+  #   deployment_targets:
+  #     accounts: 
+  #       - 423596826538
+  #   regions:
+  #     - us-east-1
 
   # - name: custom-pack
   #   resource_file: templates/conformance-pack-template.yaml
