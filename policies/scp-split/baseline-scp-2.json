@@ -19,14 +19,14 @@
         "cloudformation:Update*"
       ],
       "Resource": [
-        "arn:aws:cloudformation:*:*:stack/StackSet-*ControlTower*"
+        "arn:aws:cloudformation:*:*:stack/StackSet-*ControlTower*",
+        "arn:aws:cloudformation:*:*:stack/StackSet-*ControlTower*/*"
       ],
       "Condition": {
         "ArnNotLikeIfExists": {
           "aws:PrincipalARN": [
             "arn:aws:iam::*:role/AWSControlTowerExecution",
-            "arn:aws:iam::*:role/AWSCloudFormationStackSetExecutionRole",
-            "arn:aws:iam::*:role/*-CustomControlTower*"
+            "arn:aws:iam::*:role/AWSCloudFormationStackSetExecutionRole"
           ]
         }
       }
