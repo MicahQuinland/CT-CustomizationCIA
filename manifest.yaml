@@ -2,7 +2,7 @@
 # Home region for CodePipeline, StepFunctions, Lambda, SSM, StackSets.
 region: us-east-1  # Control Tower Home Region
 version: 2021-03-15
-enable_stack_set_deletion: false
+enable_stack_set_deletion: true
 
 resources:
 
@@ -111,22 +111,22 @@ resources:
       - us-east-1
       - us-west-2
 
-  - name: managed-pack
-    resource_file: templates/conformance-pack-template.yaml
-    parameters:
-      - parameter_key: LambdaAccountId
-        parameter_value: 423596826538
-      - parameter_key: ConformancePackName
-        parameter_value: managed-pack1
-      - parameter_key: TemplateS3Uri
-        parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-9zdgt048mrnz/config/custom-env/custom-conforms-pack-template-managed.yaml
-    deploy_method: stack_set
-    deployment_targets:
-      organizational_units:
-        - Dev
-    regions:
-      - us-east-1
-      - us-west-2
+  # - name: managed-pack
+  #   resource_file: templates/conformance-pack-template.yaml
+  #   parameters:
+  #     - parameter_key: LambdaAccountId
+  #       parameter_value: 423596826538
+  #     - parameter_key: ConformancePackName
+  #       parameter_value: managed-pack1
+  #     - parameter_key: TemplateS3Uri
+  #       parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-9zdgt048mrnz/config/custom-env/custom-conforms-pack-template-managed.yaml
+  #   deploy_method: stack_set
+  #   deployment_targets:
+  #     organizational_units:
+  #       - Dev
+  #   regions:
+  #     - us-east-1
+  #     - us-west-2
 
   - name: managed-cis-org
     resource_file: templates/managed-organization-conformance-pack-template.yaml
