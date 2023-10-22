@@ -142,3 +142,18 @@ resources:
     regions:
       - us-east-1
       - us-west-2
+
+  - name: managed-cmmc-org
+    resource_file: templates/managed-organization-conformance-pack-template.yaml
+    parameters:
+      - parameter_key: ConformancePackName
+        parameter_value: managed-cmmc-org
+      - parameter_key: TemplateS3Uri
+        parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-9zdgt048mrnz/config/managed-org/Operational-Best-Practices-for-CMMC-Level-5.yaml
+    deploy_method: stack_set
+    deployment_targets:
+      accounts: 
+        - 423596826538
+    regions:
+      - us-east-1
+      - us-west-2
