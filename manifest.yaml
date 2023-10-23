@@ -99,7 +99,7 @@ resources:
       - parameter_key: LambdaAccountId
         parameter_value: 423596826538
       - parameter_key: ConformancePackName
-        parameter_value: custom-pack1
+        parameter_value: custom-pack2
       - parameter_key: TemplateS3Uri
         parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-9zdgt048mrnz/config/custom-env/custom-conforms-pack-template-custom.yaml
     deploy_method: stack_set
