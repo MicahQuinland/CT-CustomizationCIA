@@ -6,9 +6,6 @@ enable_stack_set_deletion: false
 
 resources:
 
-  ## SCPs
-
-
   ## Clouformation 
   - name: permissions-boundary
     description: Permission boundary for accounts
@@ -20,65 +17,42 @@ resources:
     regions:
         - us-east-1
 
-#   - name: scp1
-#     description: scp1
-#     resource_file: policies/scp-split/baseline-scp-1-no-ip-consolidated.json
-#     deploy_method: scp
-#     deployment_targets: # accounts property is not supported for SCPs
-#       organizational_units:
-#         - Sandbox
-#         # - Security
-#         - Dev
-#         - Shared-Services
+  - name: config-aggregator
+    resource_file: templates/config-org-aggregator.yaml
+    deploy_method: stack_set
+    deployment_targets:
+      accounts: 
+        - 423596826538
+    regions:
+      - us-east-1
 
-#   - name: scp2
-#     description: scp2
-#     resource_file: policies/scp-split/baseline-scp-2-condensed.json
-#     deploy_method: scp
-#     deployment_targets: # accounts property is not supported for SCPs
-#       organizational_units:
-#         - Sandbox
-#         # - Security
-#         - Dev
-#         - Shared-Services
+  - name: rdk-deploy-role
+    resource_file: templates/rdk-role.yaml
+    parameters:
+      - parameter_key: LambdaAccountId
+        parameter_value: 423596826538
+    deploy_method: stack_set
+    deployment_targets:
+      organizational_units:
+        - Sandbox
+        - Security
+        - Dev
+        - Shared-Services
+    regions:
+      - us-east-1
 
-#   - name: scp3
-#     description: scp3
-#     resource_file: policies/scp-split/baseline-scp-3-condensed.json
-#     deploy_method: scp
-#     deployment_targets: # accounts property is not supported for SCPs
-#       organizational_units:
-#         - Sandbox
-#         # - Security
-#         - Dev
-#         - Shared-Services
+  - name: auto-remediation-role
+    resource_file: templates/AWS-SystemsManager-AutomationServiceRole.yaml
+    deploy_method: stack_set
+    deployment_targets:
+      organizational_units:
+        - Sandbox
+        - Security
+        - Dev
+        - Shared-Services
+    regions:
+      - us-east-1
 
-# ############
-
-#   - name: config-aggregator
-#     resource_file: templates/config-org-aggregator.yaml
-#     deploy_method: stack_set
-#     deployment_targets:
-#       accounts: 
-#         - 423596826538
-#     regions:
-#       - us-east-1
-
-#   - name: rdk-deploy-role
-#     resource_file: templates/rdk-role.yaml
-#     parameters:
-#       - parameter_key: LambdaAccountId
-#         parameter_value: 423596826538
-#     deploy_method: stack_set
-#     deployment_targets:
-#       organizational_units:
-#         - Sandbox
-#         - Security
-#         - Dev
-#         - Shared-Services
-        
-#     regions:
-#       - us-east-1
 
 #   - name: rdk-pipeline2
 #     resource_file: templates/rdk-pipeline-github-noVPC.yaml
