@@ -53,95 +53,12 @@ resources:
     regions:
       - us-east-1
 
+  - name: rdk-pipeline
+    resource_file: templates/config/rdk/rdk-pipeline-github-noVPC.yaml
+    deploy_method: stack_set
+    deployment_targets:
+      accounts: 
+        - 423596826538
+    regions:
+      - us-east-1
 
-#   - name: rdk-pipeline2
-#     resource_file: templates/rdk-pipeline-github-noVPC.yaml
-#     deploy_method: stack_set
-#     deployment_targets:
-#       accounts: 
-#         - 423596826538
-#     regions:
-#       - us-east-1
-
-#   - name: regional-fms
-#     resource_file: templates/waf/fms-waf-alb-apigw.yaml
-#     deploy_method: stack_set
-#     deployment_targets:
-#       accounts: 
-#         - 423596826538
-#     regions:
-#       - us-east-1
-#       - us-west-2
-
-#   - name: global-fms
-#     resource_file: templates/waf/fms-waf-cloudfront.yaml
-#     deploy_method: stack_set
-#     deployment_targets:
-#       accounts: 
-#         - 423596826538
-#     regions:
-#       - us-east-1
-
-#   - name: custom-pack
-#     resource_file: templates/conformance-pack-template.yaml
-#     parameters:
-#       - parameter_key: LambdaAccountId
-#         parameter_value: 423596826538
-#       - parameter_key: ConformancePackName
-#         parameter_value: custom-pack2
-#       - parameter_key: TemplateS3Uri
-#         parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-9zdgt048mrnz/config/custom-env/custom-conforms-pack-template-custom.yaml
-#     deploy_method: stack_set
-#     deployment_targets:
-#       organizational_units:
-#         - Sandbox
-#     regions:
-#       - us-east-1
-#       - us-west-2
-
-#   # - name: managed-pack
-#   #   resource_file: templates/conformance-pack-template.yaml
-#   #   parameters:
-#   #     - parameter_key: LambdaAccountId
-#   #       parameter_value: 423596826538
-#   #     - parameter_key: ConformancePackName
-#   #       parameter_value: managed-pack1
-#   #     - parameter_key: TemplateS3Uri
-#   #       parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-9zdgt048mrnz/config/custom-env/custom-conforms-pack-template-managed.yaml
-#   #   deploy_method: stack_set
-#   #   deployment_targets:
-#   #     organizational_units:
-#   #       - Dev
-#   #   regions:
-#   #     - us-east-1
-#   #     - us-west-2
-
-#   - name: managed-cis-org
-#     resource_file: templates/managed-organization-conformance-pack-template.yaml
-#     parameters:
-#       - parameter_key: ConformancePackName
-#         parameter_value: managed-cis-org
-#       - parameter_key: TemplateS3Uri
-#         parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-9zdgt048mrnz/config/managed-org/Operational-Best-Practices-for-CIS-Critical-Security-Controls-v8-IG3.yaml
-#     deploy_method: stack_set
-#     deployment_targets:
-#       accounts: 
-#         - 423596826538
-#     regions:
-#       - us-east-1
-#       - us-west-2
-
-#   - name: managed-cmmc-org
-#     resource_file: templates/managed-organization-conformance-pack-template.yaml
-#     parameters:
-#       - parameter_key: ConformancePackName
-#         parameter_value: managed-cmmc-org
-#       - parameter_key: TemplateS3Uri
-#         parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-9zdgt048mrnz/config/managed-org/Operational-Best-Practices-for-CMMC-Level-5.yaml
-#     deploy_method: stack_set
-#     deployment_targets:
-#       accounts: 
-#         - 423596826538
-#     regions:
-#       - us-east-1
-#       - us-west-2
