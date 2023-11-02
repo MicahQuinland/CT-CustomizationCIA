@@ -1,0 +1,46 @@
+rdk create lambda-003 --resource-types AWS::Lambda::Function --source-identifier LAMBDA_FUNCTION_PUBLIC_ACCESS_PROHIBITED
+
+rdk create lambda-0041 --runtime python3.9 --resource-types AWS::Lambda::Function
+
+rdk create lambda-001 --resource-types AWS::Lambda::Function --source-identifier LAMBDA_INSIDE_VPC --optional-parameters '{"subnetIds":[]}'
+
+
+
+rdk sample-ci AWS::S3::Bucket
+
+rdk create lmd001 --resource-types AWS::Lambda::Function --source-identifier LAMBDA_INSIDE_VPC
+
+rdk create lmd002 --resource-types AWS::Lambda::Function --source-identifier LAMBDA_VPC_MULTI_AZ_CHECK
+
+rdk create lmd003 --resource-types AWS::Lambda::Function --source-identifier LAMBDA_FUNCTION_PUBLIC_ACCESS_PROHIBITED
+
+rdk create lmd005 --runtime python3.9 --resource-types AWS::Lambda::Function
+
+lambda-subnets LAMBDA_SUBNETS
+
+rdk deploy lmd005  --lambda-subnets subnet-0a4edce3abeef2509 --lambda-security-groups sg-02316ed31eb4becff --lambda-role-arn arn:aws:iam::211929868839:role/rdk-test
+
+arn:aws:iam::211929868839:role/rdk-test
+
+rdk create lmd006 --runtime python3.9 --resource-types AWS::Lambda::Function
+
+rdk create stpfn001 --resource-types AWS::Lambda::Function --source-identifier STEP_FUNCTIONS_STATE_MACHINE_LOGGING_ENABLED
+
+rdk create stpfn002 --runtime python3.9 --resource-types AWS::StepFunctions::StateMachine
+
+--optional-parameters '{"subnetIds":[]}'
+
+rdk create stpfn001 --resource-types AWS::StepFunctions::StateMachine --source-identifier STEP_FUNCTIONS_STATE_MACHINE_LOGGING_ENABLED --optional-parameters '{"logLevel":"ALL"}'
+
+AWS::IAM::Role
+
+rdk create iam001 --runtime python3.9 --resource-types AWS::IAM::Role
+
+rdk create sqs001-config-serer-side-encryption --runtime python3.9 --resource-types AWS::SQS::Queue
+
+rdk create sqs003-config-deny-external-access --runtime python3.9 --resource-types AWS::SQS::Queue
+
+rdk create sqs --runtime python3.9 --resource-types AWS::SQS::Queue
+
+
+rdk create stpfn001 --resource-types AWS::Lambda::Function --source-identifier STEP_FUNCTIONS_STATE_MACHINE_LOGGING_ENABLED
