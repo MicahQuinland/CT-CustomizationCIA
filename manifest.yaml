@@ -53,7 +53,7 @@ resources:
     regions:
       - us-east-1
 
-  - name: rdk-pipeline-update2
+  - name: rdk-pipeline-update3
     resource_file: templates/config/rdk/rdk-pipeline-github-noVPC.yaml
     deploy_method: stack_set
     deployment_targets:

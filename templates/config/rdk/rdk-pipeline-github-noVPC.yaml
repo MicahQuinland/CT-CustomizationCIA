@@ -593,6 +593,19 @@ Resources:
                       cd ..                 
                     fi
                   fi
+                - |
+                  if [ -d "./automation-docs" ]; then
+                    if [ -z "$(ls -A ./automation-docs)" ]; then
+                      echo "Empty no actions needed"
+                    else
+                      cd automation-docs
+                      for file in *.yaml
+                      do
+                      aws s3 cp $file s3://${DELIVERY_S3_BUCKET}/ssm/automation/${file}
+                      done
+                      cd ..                 
+                    fi
+                  fi
 
   CodePipeline:
     Type: "AWS::CodePipeline::Pipeline"
