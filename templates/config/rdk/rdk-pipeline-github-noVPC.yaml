@@ -492,100 +492,106 @@ Resources:
                   do
                   rdk -r $region init --generate-lambda-layer --control-tower --config-bucket-exists-in-another-account
                   done
-                # 2) For every environment (prod,dev,etc.) perform these steps if not empty
+                # 2) For every environment (prod,dev,etc.) perform these steps if folder exists and not empty
                 # 2a) Check if custom rules exist, if so, for every region in VPC info file perform these steps
                 # 2b) Deploy only Custom Config Rule Centralized Lambda for all rules in this folder
                 # 2c) Generate and push conformance pack for the above lambda to S3 for deployment via cfct    
                 - |
-                  if [ -z "$(ls -A ./env)" ]; then
-                    echo "Empty no actions needed"
-                  else
-                    cd env
-                    for folder in *
-                    do
-                    cd ${folder}
-                    customcount=0
-                    for rule in *
-                    do
-                    cd $rule
-                    count=`ls -1 *.py 2>/dev/null | wc -l`
-                    if [ $count != 0 ]; then
-                      customcount=$((customcount+1))
-                    fi
-                    cd ..
-                    done
-                    if [ $customcount -gt 0 ]; then
-                      for region in $(jq -r 'keys | .[]' ../../params/vpcinfo.json)
-                      do
-                      r=\"$region\"
-                      securitygroups=.$r.'"lambda-security-groups"'
-                      securitygroups=$(jq -r $securitygroups ../../params/vpcinfo.json)
-                      lambdasubnets=.$r.'"lambda-subnets"'
-                      lambdasubnets=$(jq -r $lambdasubnets ../../params/vpcinfo.json)
-                      rdk -r $region deploy -a -g --functions-only --stack-name compliance-${TOPIC_NAME}-functions-${folder} --lambda-role-arn ${LAMBDA_ARN}
-                      done
+                  if [ -d "./env" ]; then
+                    if [ -z "$(ls -A ./env)" ]; then
+                      echo "Empty no actions needed"
                     else
-                      echo "Skip no custom rules in this folder"
+                      cd env
+                      for folder in *
+                      do
+                      cd ${folder}
+                      customcount=0
+                      for rule in *
+                      do
+                      cd $rule
+                      count=`ls -1 *.py 2>/dev/null | wc -l`
+                      if [ $count != 0 ]; then
+                        customcount=$((customcount+1))
+                      fi
+                      cd ..
+                      done
+                      if [ $customcount -gt 0 ]; then
+                        for region in $(jq -r 'keys | .[]' ../../params/vpcinfo.json)
+                        do
+                        r=\"$region\"
+                        securitygroups=.$r.'"lambda-security-groups"'
+                        securitygroups=$(jq -r $securitygroups ../../params/vpcinfo.json)
+                        lambdasubnets=.$r.'"lambda-subnets"'
+                        lambdasubnets=$(jq -r $lambdasubnets ../../params/vpcinfo.json)
+                        rdk -r $region deploy -a -g --functions-only --stack-name compliance-${TOPIC_NAME}-functions-${folder} --lambda-role-arn ${LAMBDA_ARN}
+                        done
+                      else
+                        echo "Skip no custom rules in this folder"
+                      fi
+                      rdk create-rule-template --rules-only -a -o custom-conforms-pack-template-${folder}.json
+                      python -c 'import sys, yaml, json; print(yaml.dump(json.loads(sys.stdin.read())))' < custom-conforms-pack-template-${folder}.json > custom-conforms-pack-template-${folder}.yaml
+                      aws s3 cp custom-conforms-pack-template-${folder}.yaml s3://${DELIVERY_S3_BUCKET}/config/custom-env/custom-conforms-pack-template-${folder}.yaml
+                      cd ..
+                      done
+                      cd ..
                     fi
-                    rdk create-rule-template --rules-only -a -o custom-conforms-pack-template-${folder}.json
-                    python -c 'import sys, yaml, json; print(yaml.dump(json.loads(sys.stdin.read())))' < custom-conforms-pack-template-${folder}.json > custom-conforms-pack-template-${folder}.yaml
-                    aws s3 cp custom-conforms-pack-template-${folder}.yaml s3://${DELIVERY_S3_BUCKET}/config/custom-env/custom-conforms-pack-template-${folder}.yaml
-                    cd ..
-                    done
-                    cd ..
                   fi
                 # 3) For every separate org conformance pack perform these steps
                 # 3a) Check if custom rules exist, if so, for every region in VPC info file perform these steps
                 # 3b) Deploy only Custom Config Rule Centralized Lambda for all rules in this folder
                 # 3c) Generate conformance pack but deploy to org instead of use cfct for deployment
                 - |
-                  if [ -z "$(ls -A ./org)" ]; then
-                    echo "Empty no actions needed"
-                  else
-                    cd org
-                    for folder in *
-                    do
-                    cd ${folder}
-                    customcount=0
-                    for rule in *
-                    do
-                    cd $rule
-                    count=`ls -1 *.py 2>/dev/null | wc -l`
-                    if [ $count != 0 ]; then
-                      customcount=$((customcount+1))
-                    fi
-                    cd ..
-                    done
-                    if [ $customcount -gt 0 ]; then
-                      for region in $(jq -r 'keys | .[]' ../../params/vpcinfo.json)
-                      do
-                      r=\"$region\"
-                      securitygroups=.$r.'"lambda-security-groups"'
-                      securitygroups=$(jq -r $securitygroups ../../params/vpcinfo.json)
-                      lambdasubnets=.$r.'"lambda-subnets"'
-                      lambdasubnets=$(jq -r $lambdasubnets ../../params/vpcinfo.json)
-                      rdk -r $region deploy -a -g --functions-only --stack-name compliance-${TOPIC_NAME}-functions-${folder} --lambda-role-arn ${LAMBDA_ARN}
-                      done
+                  if [ -d "./org" ]; then
+                    if [ -z "$(ls -A ./org)" ]; then
+                      echo "Empty no actions needed"
                     else
-                      echo "Skip no custom rules in this folder"
+                      cd org
+                      for folder in *
+                      do
+                      cd ${folder}
+                      customcount=0
+                      for rule in *
+                      do
+                      cd $rule
+                      count=`ls -1 *.py 2>/dev/null | wc -l`
+                      if [ $count != 0 ]; then
+                        customcount=$((customcount+1))
+                      fi
+                      cd ..
+                      done
+                      if [ $customcount -gt 0 ]; then
+                        for region in $(jq -r 'keys | .[]' ../../params/vpcinfo.json)
+                        do
+                        r=\"$region\"
+                        securitygroups=.$r.'"lambda-security-groups"'
+                        securitygroups=$(jq -r $securitygroups ../../params/vpcinfo.json)
+                        lambdasubnets=.$r.'"lambda-subnets"'
+                        lambdasubnets=$(jq -r $lambdasubnets ../../params/vpcinfo.json)
+                        rdk -r $region deploy -a -g --functions-only --stack-name compliance-${TOPIC_NAME}-functions-${folder} --lambda-role-arn ${LAMBDA_ARN}
+                        done
+                      else
+                        echo "Skip no custom rules in this folder"
+                      fi
+                      rdk create-rule-template --rules-only -a -o custom-conforms-pack-template-${folder}.json
+                      python -c 'import sys, yaml, json; print(yaml.dump(json.loads(sys.stdin.read())))' < custom-conforms-pack-template-${folder}.json > custom-conforms-pack-template-${folder}.yaml
+                      aws s3 cp custom-conforms-pack-template-${folder}.yaml s3://${DELIVERY_S3_BUCKET}/config/custom-org/custom-conforms-pack-template-${folder}.yaml                
+                      cd ..
+                      done
+                      cd ..
                     fi
-                    rdk create-rule-template --rules-only -a -o custom-conforms-pack-template-${folder}.json
-                    python -c 'import sys, yaml, json; print(yaml.dump(json.loads(sys.stdin.read())))' < custom-conforms-pack-template-${folder}.json > custom-conforms-pack-template-${folder}.yaml
-                    aws s3 cp custom-conforms-pack-template-${folder}.yaml s3://${DELIVERY_S3_BUCKET}/config/custom-org/custom-conforms-pack-template-${folder}.yaml                
-                    cd ..
-                    done
-                    cd ..
                   fi
                 - |
-                  if [ -z "$(ls -A ./managed-packs)" ]; then
-                    echo "Empty no actions needed"
-                  else
-                    cd managed-packs
-                    for file in *.yaml
-                    do
-                    aws s3 cp $file s3://${DELIVERY_S3_BUCKET}/config/managed-org/${file}
-                    done
-                    cd ..                 
+                  if [ -d "./managed-packs" ]; then
+                    if [ -z "$(ls -A ./managed-packs)" ]; then
+                      echo "Empty no actions needed"
+                    else
+                      cd managed-packs
+                      for file in *.yaml
+                      do
+                      aws s3 cp $file s3://${DELIVERY_S3_BUCKET}/config/managed-org/${file}
+                      done
+                      cd ..                 
+                    fi
                   fi
 
   CodePipeline:
