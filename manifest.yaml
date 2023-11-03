@@ -71,7 +71,7 @@ resources:
     regions:
       - us-east-1
 
-  - name: managed-pack-lmd001
+  - name: managed-pack-lmd001-1
     resource_file: templates/config/conformance-packs/conformance-pack-template.yaml
     parameters:
       - parameter_key: LambdaAccountId
