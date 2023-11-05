@@ -601,7 +601,7 @@ Resources:
                       cd automation-docs
                       for file in *.yaml
                       do
-                      aws s3 cp $file s3://${DELIVERY_S3_BUCKET}/ssm/automation/${file}
+                      aws s3 cp $file s3://${DELIVERY_S3_BUCKET}/config/ssm-automation/${file}
                       done
                       cd ..                 
                     fi
