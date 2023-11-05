@@ -12,10 +12,19 @@
 # permissions and limitations under the License.
 
 AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  LambdaAccountId:
+    Description: Lambda Account ID
+    MaxLength: '12'
+    MinLength: '12'
+    Type: String
+    Default: "423596826538"
 Resources:
-  lmd001:
+  ConfigRuleStack:
     Type: AWS::CloudFormation::Stack
     # DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      TemplateURL: https://stackset-customcontroltower-rdk-pi-artifactbucket-1lln884s7weou.s3.amazonaws.com/config/ssm-automation/compute-ssm-automation.yaml
+      TemplateURL: https://stackset-customcontroltower-rdk-pi-artifactbucket-1lln884s7weou.s3.amazonaws.com/config/custom-env/custom-conforms-pack-template-managed.yaml
+      Parameters:
+        LambdaAccountId: !Ref LambdaAccountId

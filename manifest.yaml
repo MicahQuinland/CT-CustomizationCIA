@@ -62,27 +62,23 @@ resources:
     regions:
       - us-east-1
 
-  # - name: ssm-docs-01
-  #   resource_file: templates/config/ssm-automation-docs-01.yaml
-  #   deploy_method: stack_set
-  #   deployment_targets:
-  #     accounts: 
-  #       - 954102277183
-  #   regions:
-  #     - us-east-1
+  - name: ssm-docs-01
+    resource_file: templates/config/ssm-automation-docs-01.yaml
+    deploy_method: stack_set
+    deployment_targets:
+      accounts: 
+        - 954102277183
+    regions:
+      - us-east-1
 
-  # - name: managed-pack-lmd001-1
-  #   resource_file: templates/config/conformance-packs/conformance-pack-template.yaml
-  #   parameters:
-  #     - parameter_key: LambdaAccountId
-  #       parameter_value: 423596826538
-  #     - parameter_key: ConformancePackName
-  #       parameter_value: managed-pack-lmd001
-  #     - parameter_key: TemplateS3Uri
-  #       parameter_value: s3://stackset-customcontroltower-rdk-pi-artifactbucket-8zq9lvefzo9i/config/custom-env/custom-conforms-pack-template-managed.yaml
-  #   deploy_method: stack_set
-  #   deployment_targets:
-  #     accounts: 
-  #       - 954102277183
-  #   regions:
-  #     - us-east-1
+  - name: unpacked-rules
+    resource_file: templates/config/unpacked-config-rules.yaml
+    parameters:
+      - parameter_key: LambdaAccountId
+        parameter_value: 423596826538
+    deploy_method: stack_set
+    deployment_targets:
+      accounts: 
+        - 954102277183
+    regions:
+      - us-east-1
