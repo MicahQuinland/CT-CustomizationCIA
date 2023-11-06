@@ -62,7 +62,7 @@ resources:
     regions:
       - us-east-1
 
-  - name: ssm-docs-04
+  - name: ssm-docs-05
     resource_file: templates/config/ssm-automation-docs-01.yaml
     deploy_method: stack_set
     deployment_targets:
