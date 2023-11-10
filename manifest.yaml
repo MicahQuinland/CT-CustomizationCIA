@@ -83,7 +83,7 @@ resources:
     regions:
       - us-east-1
 
-  - name: ulambda
+  - name: ulambda-1
     resource_file: templates/lambda.yaml
     deploy_method: stack_set
     deployment_targets:
