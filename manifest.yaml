@@ -82,3 +82,12 @@ resources:
         - 954102277183
     regions:
       - us-east-1
+
+  - name: ulambda
+    resource_file: templates/lambda.yaml
+    deploy_method: stack_set
+    deployment_targets:
+      accounts: 
+        - 954102277183
+    regions:
+      - us-east-1

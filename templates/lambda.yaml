@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: VPC function.
+Resources:
+  Function:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Role: arn:aws:iam::954102277183:role/service-role/x8898-role-5gvptqvq
+      Code:
+        ZipFile: |
+          const { S3Client, ListBucketsCommand } = require("@aws-sdk/client-s3");
+          const s3 = new S3Client({ region: "us-east-1" }); // replace "us-east-1" with your AWS region
+
+          exports.handler = async function(event) {
+            const command = new ListBucketsCommand({});
+            const response = await s3.send(command);
+            return response.Buckets;
+          };
+      Runtime: nodejs18.x
+      Timeout: 5
+      # TracingConfig:
+      #   Mode: Active
+      # VpcConfig:
+      #   SecurityGroupIds:
+      #     - sg-004bb0511af7b524e
+      #   SubnetIds:
+      #     - subnet-039a3f9de894f5b62
