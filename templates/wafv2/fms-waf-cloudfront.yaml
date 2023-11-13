@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  GlobalIPSet:
+    Type: 'AWS::WAFv2::IPSet'
+    Properties:
+      Description: Global IPSet for Cloudfront whitelist 
+      Name: CLOUDFRONT-IPSet
+      Scope: CLOUDFRONT
+      IPAddressVersion: IPV4
+      Addresses:
+        - 74.139.161.146/32
+
+  GlobalRuleGroup:
+    Type: 'AWS::WAFv2::RuleGroup'
+    Properties:
+      Name: CloudFront-RuleGroup
+      Scope: CLOUDFRONT
+      Description: Global Rule Group for CloudFront
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: GlobalWAFRuleGroupMetrics
+      Capacity: 1
+      Rules:
+        - Name: RuleOne
+          Priority: 0
+          Statement:
+            IPSetReferenceStatement:
+              Arn: !GetAtt GlobalIPSet.Arn
+          Action:
+            Allow: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: globalwafipsetmetric
+
+  WAFLoggingBucketKey:
+    Type: AWS::KMS::Key
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Description: KMS Key for WAF Log Bucket
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: "2012-10-17"
+        Id: "key-default-1"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: "kms:*"
+            Resource: "*"
+          - Effect: "Allow"
+            Principal:
+              Service: "delivery.logs.amazonaws.com"
+            Action:
+              - kms:Encrypt
+              - kms:Decrypt
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:DescribeKey
+            Resource: "*"
+
+  WAFLoggingBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      BucketName: aws-waf-logs-micah2
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'aws:kms'
+              KMSMasterKeyID: !GetAtt WAFLoggingBucketKey.Arn
+            BucketKeyEnabled: true
+
+  CloudFrontPolicy1:
+      Type: AWS::FMS::Policy
+      Properties:
+        ExcludeResourceTags: false
+        PolicyName: Cloudfront-WAF-Policy1
+        RemediationEnabled: true
+        ResourceType: AWS::CloudFront::Distribution
+        ResourcesCleanUp: true
+        SecurityServicePolicyData:
+          Type: WAFV2
+          ManagedServiceData: !Sub '{"type":"WAFV2",
+                                  "preProcessRuleGroups":[{
+                                  "ruleGroupType":"RuleGroup",
+                                  "ruleGroupArn":"${GlobalRuleGroup.Arn}",
+                                  "overrideAction":{"type":"NONE"}}],
+                                  "postProcessRuleGroups":[],
+                                  "defaultAction":{"type":"BLOCK"},
+                                  "loggingConfiguration":{"logDestinationConfigs":["${WAFLoggingBucket.Arn}"]}}'
