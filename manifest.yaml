@@ -102,8 +102,8 @@ resources:
   #   regions:
   #     - us-east-1
 
-  # - name: regional-fms2
-  #   resource_file: ./templates/waf/fms-waf-alb-apigw.yaml
+  # - name: lamb2
+  #   resource_file: ./templates/lambda.yaml
   #   deploy_method: stack_set
   #   deployment_targets:
   #     accounts: 
@@ -111,22 +111,3 @@ resources:
   #   regions:
   #     - us-east-1
   #     - us-west-2
-
-  # - name: global-fms2
-  #   resource_file: ./templates/waf/fms-waf-cloudfront.yaml
-  #   deploy_method: stack_set
-  #   deployment_targets:
-  #     accounts: 
-  #       - 5423596826538
-  #   regions:
-  #     - us-east-1
-
-  - name: lamb2
-    resource_file: ./templates/lambda.yaml
-    deploy_method: stack_set
-    deployment_targets:
-      accounts: 
-        - 5423596826538
-    regions:
-      - us-east-1
-      - us-west-2
