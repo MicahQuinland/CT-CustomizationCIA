@@ -12,7 +12,7 @@ Resources:
       Scope: REGIONAL
       IPAddressVersion: IPV4
       Addresses:
-        - 74.139.161.146/32
+        - 24.125.118.95/32
 
   RegionalRuleGroup:
     Type: 'AWS::WAFv2::RuleGroup'
