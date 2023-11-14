@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
-  BucketName:
-    Description: Lambda Account ID
+  USEast1BucketName:
+    Description: US-EAST-1 Regional WAF Logging bucket name
     Type: String
 Resources:
   GlobalIPSet:
@@ -38,47 +38,47 @@ Resources:
             CloudWatchMetricsEnabled: true
             MetricName: globalwafipsetmetric
 
-  WAFLoggingBucketKey:
-    Type: AWS::KMS::Key
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
-    Properties:
-      Description: KMS Key for WAF Log Bucket
-      EnableKeyRotation: true
-      KeyPolicy:
-        Version: "2012-10-17"
-        Id: "key-default-1"
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-            Action: "kms:*"
-            Resource: "*"
-          - Effect: "Allow"
-            Principal:
-              Service: "delivery.logs.amazonaws.com"
-            Action:
-              - kms:Encrypt
-              - kms:Decrypt
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:DescribeKey
-            Resource: "*"
+  # WAFLoggingBucketKey:
+  #   Type: AWS::KMS::Key
+  #   DeletionPolicy: Retain
+  #   UpdateReplacePolicy: Retain
+  #   Properties:
+  #     Description: KMS Key for WAF Log Bucket
+  #     EnableKeyRotation: true
+  #     KeyPolicy:
+  #       Version: "2012-10-17"
+  #       Id: "key-default-1"
+  #       Statement:
+  #         - Effect: "Allow"
+  #           Principal:
+  #             AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+  #           Action: "kms:*"
+  #           Resource: "*"
+  #         - Effect: "Allow"
+  #           Principal:
+  #             Service: "delivery.logs.amazonaws.com"
+  #           Action:
+  #             - kms:Encrypt
+  #             - kms:Decrypt
+  #             - kms:ReEncrypt*
+  #             - kms:GenerateDataKey*
+  #             - kms:DescribeKey
+  #           Resource: "*"
 
-  WAFLoggingBucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
-    Properties:
-      VersioningConfiguration:
-        Status: Enabled
-      BucketName: aws-waf-logs-micah2
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: 'aws:kms'
-              KMSMasterKeyID: !GetAtt WAFLoggingBucketKey.Arn
-            BucketKeyEnabled: true
+  # WAFLoggingBucket:
+  #   Type: AWS::S3::Bucket
+  #   DeletionPolicy: Retain
+  #   UpdateReplacePolicy: Retain
+  #   Properties:
+  #     VersioningConfiguration:
+  #       Status: Enabled
+  #     BucketName: aws-waf-logs-micah2
+  #     BucketEncryption:
+  #       ServerSideEncryptionConfiguration:
+  #         - ServerSideEncryptionByDefault:
+  #             SSEAlgorithm: 'aws:kms'
+  #             KMSMasterKeyID: !GetAtt WAFLoggingBucketKey.Arn
+  #           BucketKeyEnabled: true
 
   CloudFrontPolicy:
     Type: AWS::FMS::Policy
@@ -97,4 +97,4 @@ Resources:
                                 "overrideAction":{"type":"NONE"}}],
                                 "postProcessRuleGroups":[],
                                 "defaultAction":{"type":"BLOCK"},
-                                "loggingConfiguration":{"logDestinationConfigs":["${WAFLoggingBucket.Arn}"]}}'
+                                "loggingConfiguration":{"logDestinationConfigs":["arn:${AWS::Partition}:s3:::aws-waf-logs-${USEast1BucketName}-${AWS::Region}"]}}'
