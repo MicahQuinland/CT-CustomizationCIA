@@ -25,6 +25,6 @@ Resources:
     # DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      TemplateURL: https://stackset-customcontroltower-rdk-pi-artifactbucket-1lln884s7weou.s3.amazonaws.com/config/custom-env/custom-conforms-pack-template-managed.yaml
+      TemplateURL: https://stackset-customcontroltower-rdk-pip-artifactbucket-y5iaixkaofnr.s3.amazonaws.com/config/custom-env/custom-conforms-pack-template-managed.yaml
       Parameters:
         LambdaAccountId: !Ref LambdaAccountId

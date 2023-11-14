@@ -62,7 +62,7 @@ resources:
     regions:
       - us-east-1
 
-  - name: ssm-docs-05
+  - name: ssm-docs-06
     resource_file: templates/config/ssm-automation-docs-01.yaml
     deploy_method: stack_set
     deployment_targets:
@@ -71,7 +71,7 @@ resources:
     regions:
       - us-east-1
 
-  - name: unpacked-rules-02
+  - name: unpacked-rules-03
     resource_file: templates/config/unpacked-config-rules.yaml
     parameters:
       - parameter_key: LambdaAccountId
