@@ -84,28 +84,6 @@ Resources:
               KMSMasterKeyID: !GetAtt WAFLoggingBucketKey.Arn
             BucketKeyEnabled: true
 
-  # FMSPolicy:
-  #   Type: AWS::FMS::Policy
-  #   Properties:
-  #     ExcludeResourceTags: false
-  #     PolicyName: REGIONAL-WAF-Policy
-  #     RemediationEnabled: true
-  #     ResourceType: ResourceTypeList
-  #     ResourceTypeList:
-  #       - AWS::ApiGateway::Stage
-  #       - AWS::ElasticLoadBalancingV2::LoadBalancer
-  #     ResourcesCleanUp: true
-  #     SecurityServicePolicyData:
-  #       Type: WAFV2
-  #       ManagedServiceData: !Sub '{"type":"WAFV2",
-  #                               "preProcessRuleGroups":[{
-  #                               "ruleGroupType":"RuleGroup",
-  #                               "ruleGroupArn":"${RegionalRuleGroup.Arn}",
-  #                               "overrideAction":{"type":"NONE"}}],
-  #                               "postProcessRuleGroups":[],
-  #                               "defaultAction":{"type":"BLOCK"},
-  #                               "loggingConfiguration":{"logDestinationConfigs":["${WAFLoggingBucket.Arn}"]}}'
-
   FMSPolicy:
     Type: AWS::FMS::Policy
     Properties:
@@ -119,16 +97,11 @@ Resources:
       ResourcesCleanUp: true
       SecurityServicePolicyData:
         Type: WAFV2
-        ManagedServiceData:
-          type: WAFV2
-          preProcessRuleGroups:
-            - ruleGroupType: RuleGroup
-              ruleGroupArn: !Sub ${RegionalRuleGroup.Arn}
-              overrideAction:
-                type: NONE
-          postProcessRuleGroups: []
-          defaultAction:
-            type: BLOCK
-          loggingConfiguration:
-            logDestinationConfigs:
-              - !Sub ${WAFLoggingBucket.Arn}
+        ManagedServiceData: !Sub '{"type":"WAFV2",
+                                "preProcessRuleGroups":[{
+                                "ruleGroupType":"RuleGroup",
+                                "ruleGroupArn":"${RegionalRuleGroup.Arn}",
+                                "overrideAction":{"type":"NONE"}}],
+                                "postProcessRuleGroups":[],
+                                "defaultAction":{"type":"BLOCK"},
+                                "loggingConfiguration":{"logDestinationConfigs":["${WAFLoggingBucket.Arn}"]}}'
