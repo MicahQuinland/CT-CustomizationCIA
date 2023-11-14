@@ -1,10 +1,14 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  BucketName:
+    Description: Unique WAF Logging bucket name
+    Type: String
 Resources:
   RegionalIPSet:
     Type: 'AWS::WAFv2::IPSet'
     Properties:
       Description: Regional IPSet for API GW and ALB whitelist
-      Name: APIGW-ALB-IPSet
+      Name: REGIONAL-WAF-IPSet
       Scope: REGIONAL
       IPAddressVersion: IPV4
       Addresses:
@@ -13,7 +17,7 @@ Resources:
   RegionalRuleGroup:
     Type: 'AWS::WAFv2::RuleGroup'
     Properties:
-      Name: APIGW-ALB-RuleGroup
+      Name: REGIONAL-WAF-RuleGroup
       Scope: REGIONAL
       Description: Regional Rule Group for API GW and ALB whitelist
       VisibilityConfig:
@@ -68,7 +72,11 @@ Resources:
     Properties:
       VersioningConfiguration:
         Status: Enabled
-      BucketName: aws-waf-logs-micah1
+      BucketName: !Join
+        - '-'
+        - - aws-waf-logs
+          - !Ref BucketName
+          - !Sub ${AWS::Region}
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -76,24 +84,51 @@ Resources:
               KMSMasterKeyID: !GetAtt WAFLoggingBucketKey.Arn
             BucketKeyEnabled: true
 
+  # FMSPolicy:
+  #   Type: AWS::FMS::Policy
+  #   Properties:
+  #     ExcludeResourceTags: false
+  #     PolicyName: REGIONAL-WAF-Policy
+  #     RemediationEnabled: true
+  #     ResourceType: ResourceTypeList
+  #     ResourceTypeList:
+  #       - AWS::ApiGateway::Stage
+  #       - AWS::ElasticLoadBalancingV2::LoadBalancer
+  #     ResourcesCleanUp: true
+  #     SecurityServicePolicyData:
+  #       Type: WAFV2
+  #       ManagedServiceData: !Sub '{"type":"WAFV2",
+  #                               "preProcessRuleGroups":[{
+  #                               "ruleGroupType":"RuleGroup",
+  #                               "ruleGroupArn":"${RegionalRuleGroup.Arn}",
+  #                               "overrideAction":{"type":"NONE"}}],
+  #                               "postProcessRuleGroups":[],
+  #                               "defaultAction":{"type":"BLOCK"},
+  #                               "loggingConfiguration":{"logDestinationConfigs":["${WAFLoggingBucket.Arn}"]}}'
+
   FMSPolicy:
-      Type: AWS::FMS::Policy
-      Properties:
-        ExcludeResourceTags: false
-        PolicyName: REGIONAL-WAF-Policy
-        RemediationEnabled: true
-        ResourceType: ResourceTypeList
-        ResourceTypeList:
-          - AWS::ApiGateway::Stage
-          - AWS::ElasticLoadBalancingV2::LoadBalancer
-        ResourcesCleanUp: true
-        SecurityServicePolicyData:
-          Type: WAFV2
-          ManagedServiceData: !Sub '{"type":"WAFV2",
-                                  "preProcessRuleGroups":[{
-                                  "ruleGroupType":"RuleGroup",
-                                  "ruleGroupArn":"${RegionalRuleGroup.Arn}",
-                                  "overrideAction":{"type":"NONE"}}],
-                                  "postProcessRuleGroups":[],
-                                  "defaultAction":{"type":"BLOCK"},
-                                  "loggingConfiguration":{"logDestinationConfigs":["${WAFLoggingBucket.Arn}"]}}'
+    Type: AWS::FMS::Policy
+    Properties:
+      ExcludeResourceTags: false
+      PolicyName: REGIONAL-WAF-Policy
+      RemediationEnabled: true
+      ResourceType: ResourceTypeList
+      ResourceTypeList:
+        - AWS::ApiGateway::Stage
+        - AWS::ElasticLoadBalancingV2::LoadBalancer
+      ResourcesCleanUp: true
+      SecurityServicePolicyData:
+        Type: WAFV2
+        ManagedServiceData:
+          type: WAFV2
+          preProcessRuleGroups:
+            - ruleGroupType: RuleGroup
+              ruleGroupArn: !Sub ${RegionalRuleGroup.Arn}
+              overrideAction:
+                type: NONE
+          postProcessRuleGroups: []
+          defaultAction:
+            type: BLOCK
+          loggingConfiguration:
+            logDestinationConfigs:
+              - !Sub ${WAFLoggingBucket.Arn}
