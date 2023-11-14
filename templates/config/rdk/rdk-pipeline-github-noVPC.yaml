@@ -271,6 +271,11 @@ Resources:
   # S3
   BucketKey:
     Type: AWS::KMS::Key
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: F76
+            reason: "Key Access for root"
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
