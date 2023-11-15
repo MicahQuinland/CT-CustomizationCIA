@@ -18,4 +18,4 @@ Resources:
     # DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      TemplateURL: https://stackset-customcontroltower-rdk-pip-artifactbucket-mwe6oc7qf6kb.s3.amazonaws.com/config/ssm-automation/compute-ssm-automation.yaml
+      TemplateURL: https://stackset-customcontroltower-rdk-pip-artifactbucket-1yqtcrdpmxao.s3.amazonaws.com/config/ssm-automation/compute-ssm-automation.yaml
