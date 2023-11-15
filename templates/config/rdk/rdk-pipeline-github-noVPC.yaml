@@ -294,28 +294,11 @@ Resources:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
             Action: kms:*
             Resource: "*"
-          # - Effect: "Allow"
-          #   Principal:
-          #     Service: 
-          #       - codebuild.amazonaws.com
-          #       - codepipeline.amazonaws.com
-          #       - s3.amazonaws.com
-          #   Action:
-          #     - kms:Encrypt
-          #     - kms:Decrypt
-          #     - kms:ReEncrypt*
-          #     - kms:GenerateDataKey*
-          #     - kms:DescribeKey
-          #   Resource: "*"
           - Effect: "Allow"
             Principal:
               AWS: "*"
             Action:
-              # - kms:Encrypt
               - kms:Decrypt
-              # - kms:ReEncrypt*
-              # - kms:GenerateDataKey*
-              # - kms:DescribeKey
             Resource: "*"
             Condition:
               StringEquals:
@@ -358,9 +341,7 @@ Resources:
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
-              SSEAlgorithm: 'aws:kms'
-              KMSMasterKeyID: !GetAtt BucketKey.Arn
-            BucketKeyEnabled: true
+              SSEAlgorithm: AES256
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
