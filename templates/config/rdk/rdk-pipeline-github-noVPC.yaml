@@ -307,11 +307,11 @@ Resources:
             Principal:
               AWS: "*"
             Action:
-              - kms:Encrypt
+              # - kms:Encrypt
               - kms:Decrypt
-              - kms:ReEncrypt*
-              - kms:GenerateDataKey*
-              - kms:DescribeKey
+              # - kms:ReEncrypt*
+              # - kms:GenerateDataKey*
+              # - kms:DescribeKey
             Resource: "*"
             Condition:
               StringEquals:
