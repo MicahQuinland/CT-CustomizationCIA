@@ -303,6 +303,16 @@ Resources:
             Condition:
               StringEquals:
                 'aws:PrincipalOrgID': !Ref PrincipalOrgID
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action:
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:DescribeKey'
+            Resource: '*'
 
   ArtifactBucket:
     Type: "AWS::S3::Bucket"
@@ -341,7 +351,12 @@ Resources:
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
+              SSEAlgorithm: 'aws:kms'
+              KMSMasterKeyID: !GetAtt BucketKey.Arn
+            BucketKeyEnabled: true
+        # ServerSideEncryptionConfiguration:
+        #   - ServerSideEncryptionByDefault:
+        #       SSEAlgorithm: AES256
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
