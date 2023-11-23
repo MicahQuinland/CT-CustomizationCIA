@@ -59,4 +59,5 @@ Resources:
                                 "ruleGroupArn":"${RegionalRuleGroup.Arn}",
                                 "overrideAction":{"type":"NONE"}}],
                                 "postProcessRuleGroups":[],
-                                  "defaultAction":{"type":"BLOCK"}}'
+                                "defaultAction":{"type":"BLOCK"},
+                                "loggingConfiguration":{"logDestinationConfigs":["arn:aws:firehose:us-east-1:423596826538:deliverystream/aws-waf-logs-test1"]}}'
