@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  IncludeList:
+    Description: Include account list
+    Type: List<Number>
+Resources:
+  RegionalIPSet:
+    Type: 'AWS::WAFv2::IPSet'
+    Properties:
+      Description: Regional IPSet for API GW and ALB whitelist
+      Name: REGIONAL-WAF-IPSet-testing
+      Scope: REGIONAL
+      IPAddressVersion: IPV4
+      Addresses:
+        - 24.125.118.95/32
+
+  RegionalRuleGroup:
+    Type: 'AWS::WAFv2::RuleGroup'
+    Properties:
+      Name: REGIONAL-WAF-RuleGroup-testing
+      Scope: REGIONAL
+      Description: Regional Rule Group for API GW and ALB whitelist
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: RegionalWAFRuleGroupMetrics-testing
+      Capacity: 1
+      Rules:
+        - Name: RuleOne
+          Priority: 0
+          Statement:
+            IPSetReferenceStatement:
+              Arn: !GetAtt RegionalIPSet.Arn
+          Action:
+            Allow: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: regionalwafipsetmetric-testing
+
+  FMSPolicy:
+    Type: AWS::FMS::Policy
+    Properties:
+      PolicyName: REGIONAL-WAF-Policy-testing
+      IncludeMap:
+        ACCOUNT: !Ref IncludeList
+      ExcludeResourceTags: false
+      RemediationEnabled: true
+      ResourceType: ResourceTypeList
+      ResourceTypeList:
+        - AWS::ApiGateway::Stage
+        - AWS::ElasticLoadBalancingV2::LoadBalancer
+      ResourcesCleanUp: true
+      SecurityServicePolicyData:
+        Type: WAFV2
+        ManagedServiceData: !Sub '{"type":"WAFV2",
+                                "preProcessRuleGroups":[{
+                                "ruleGroupType":"RuleGroup",
+                                "ruleGroupArn":"${RegionalRuleGroup.Arn}",
+                                "overrideAction":{"type":"NONE"}}],
+                                "postProcessRuleGroups":[],
+                                  "defaultAction":{"type":"BLOCK"}}'
