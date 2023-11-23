@@ -108,7 +108,7 @@ resources:
     regions:
       - us-east-1
 
-  - name: regional-fms2-testing
+  - name: regional-fms2-testing-use1
     resource_file: ./templates/wafv2/fms-regional-waf-validation.yaml
     parameters:
       - parameter_key: IncludeList
@@ -119,4 +119,3 @@ resources:
         - 423596826538
     regions:
       - us-east-1
-      - us-west-2
