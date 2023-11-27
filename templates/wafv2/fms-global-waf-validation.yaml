@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  IncludeList:
+    Description: Include account list
+    Type: List<Number>
+Resources:
+  GlobalIPSet:
+    Type: 'AWS::WAFv2::IPSet'
+    Properties:
+      Description: Global IPSet for Cloudfront whitelist 
+      Name: CLOUDFRONT-IPSet-testing
+      Scope: CLOUDFRONT
+      IPAddressVersion: IPV4
+      Addresses:
+        - 24.125.118.95/32
+
+  GlobalRuleGroup:
+    Type: 'AWS::WAFv2::RuleGroup'
+    Properties:
+      Name: CloudFront-RuleGroup-testing
+      Scope: CLOUDFRONT
+      Description: Global Rule Group for CloudFront
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: GlobalWAFRuleGroupMetrics-testing
+      Capacity: 1
+      Rules:
+        - Name: RuleOne
+          Priority: 0
+          Statement:
+            IPSetReferenceStatement:
+              Arn: !GetAtt GlobalIPSet.Arn
+          Action:
+            Allow: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: globalwafipsetmetric-testing
+
+  CloudFrontPolicy:
+    Type: AWS::FMS::Policy
+    Properties:
+      PolicyName: Cloudfront-WAF-Policy-testing
+      IncludeMap:
+        ACCOUNT: !Ref IncludeList
+      ExcludeResourceTags: false
+      RemediationEnabled: true
+      ResourceType: AWS::CloudFront::Distribution
+      ResourcesCleanUp: true
+      SecurityServicePolicyData:
+        Type: WAFV2
+        ManagedServiceData: !Sub '{"type":"WAFV2",
+                                "preProcessRuleGroups":[{
+                                "ruleGroupType":"RuleGroup",
+                                "ruleGroupArn":"${GlobalRuleGroup.Arn}",
+                                "overrideAction":{"type":"NONE"}}],
+                                "postProcessRuleGroups":[],
+                                "defaultAction":{"type":"BLOCK"},
+                                "loggingConfiguration":{"logDestinationConfigs":["arn:aws:firehose:us-east-1:423596826538:deliverystream/aws-waf-logs-test1"]}}'
