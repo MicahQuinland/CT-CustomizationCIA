@@ -540,12 +540,13 @@ Resources:
                 - set -e
                 # Check if the RDK folder is present in the CFCT repo
                 - |
-                  if [ -d "./rdk" ]; then
-                    if [ -z "$(ls -A ./rdk)" ]; then
+                  if [ -d "./rdk-pipeline2" ]; then
+                    if [ -z "$(ls -A ./rdk-pipeline2)" ]; then
                       echo "Quitting Code Build" && exit 1
                     else
                       echo "RDK folder present and not empty"
-                      cd rdk
+                      cd rdk-pipeline2
+                    fi
                   else
                     echo "Quitting Code Build" && exit 1
                   fi                  
