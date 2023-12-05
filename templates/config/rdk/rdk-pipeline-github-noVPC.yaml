@@ -37,11 +37,11 @@ Parameters:
     Default: "o-u5586ti0us"
   GitRepositoryName:
     Description: Name of the Git repository that contains custom Control Tower configuration. The suffix .git is prohibited.
-    Default: MicahQuinland/rdk-pipeline
+    Default: MicahQuinland/CT-CustomizationCIA #MicahQuinland/rdk-pipeline
     Type: String
   GitBranchName:
     Description: Name of the branch in Git repository that contains custom Control Tower configuration.
-    Default: guard
+    Default: main #guard
     Type: String
 Resources:
   ## Service role used for the CodeBuild project
@@ -538,6 +538,17 @@ Resources:
             build:
               commands:
                 - set -e
+                # Check if the RDK folder is present in the CFCT repo
+                - |
+                  if [ -d "./rdk" ]; then
+                    if [ -z "$(ls -A ./rdk)" ]; then
+                      echo "Quitting Code Build" && exit 1
+                    else
+                      echo "RDK folder present and not empty"
+                      cd rdk
+                  else
+                    echo "Quitting Code Build" && exit 1
+                  fi                  
                 # 1) Generate rdklib Lambda Layer for Config Rule Lambdas hub account regions and create config rule code buckets for lambdatemplate deployment
                 - |
                   for region in $(jq -r 'keys | .[]' params/vpcinfo.json)
