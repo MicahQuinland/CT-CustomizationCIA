@@ -1,0 +1,193 @@
+# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
+
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  lmd001: 
+    Type: AWS::SSM::Document
+    Properties:
+      DocumentFormat: YAML
+      DocumentType: Automation
+      Name: 'lmd001-MoveLambdaToVPC'
+      Content:
+        schemaVersion: "0.3"
+        description: |
+          ### Document name - AWSConfigRemediation-MoveLambdaToVPC
+
+          ## What does this document do?
+          This document moves the given AWS Lambda function to the user specified Amazon Virtual Private Cloud (VPC) using the 
+          [UpdateFunctionConfiguration](https://docs.aws.amazon.com/lambda/latest/dg/API_UpdateFunctionConfiguration.html) API.
+
+          ## Input Parameters
+          * AutomationAssumeRole: (Required) The ARN of the role that allows Automation to perform the actions on your behalf.
+          * FunctionName: (Required) The AWS Lambda function name.
+
+          ## Output Parameters
+          * UpdateFunctionVPCConfiguration.Response: The standard HTTP response from the UpdateFunctionConfiguration API call.
+
+        assumeRole: "{{ AutomationAssumeRole }}"
+        parameters:
+          AutomationAssumeRole:
+            type: String
+            description: (Required) The ARN of the role that allows Automation to perform the actions on your behalf.
+            allowedPattern: ^arn:aws[a-z0-9-]*:iam::\d{12}:role\/[\w-\/.@+=,]{1,1017}$
+          FunctionName:
+            type: String
+            description: (Required) The AWS Lambda function name.
+            allowedPattern: ^[a-zA-Z0-9-_]+$
+
+        outputs:
+          - UpdateFunctionVPCConfiguration.Response
+        mainSteps:
+          - name: VPCLookUp
+            action: "aws:executeScript"
+            description: |
+              ## VPCLookUp
+              Attempts to look up VPC for Lambda Configuration
+              ## Outputs
+              * Output: VPCID, SubnetIDs, SecurityGroupIDs
+            isEnd: false
+            timeoutSeconds: 600
+            inputs:
+              Runtime: python3.8
+              Handler: lambda_handler
+              Script: |-
+                import boto3
+                ec2_client = boto3.client('ec2')
+                def get_vpc_ids():
+                    response = ec2_client.describe_vpcs()
+                    return [vpc['VpcId'] for vpc in response['Vpcs']]
+
+                def list_subnets(vpc_id):
+                    response = ec2_client.describe_subnets(Filters=[{'Name': 'vpc-id','Values': [vpc_id]}])
+                    return [subnet['SubnetId'] for subnet in response['Subnets']]
+
+                def list_security_groups(vpc_id):
+                    response = ec2_client.describe_security_groups(Filters=[{'Name': 'vpc-id','Values': [vpc_id]}])
+                    return [group['GroupId'] for group in response['SecurityGroups']]
+
+                def lambda_handler(event, context):   
+                    vpc_ids = get_vpc_ids()
+                    if not vpc_ids:
+                        raise Exception("REMEDIATION FAILED. {} LAMBDA FUNCTION ACCOUNT DOES NOT HAVE A VPC".format(context.function_name))
+                    subnet_ids = list_subnets(vpc_ids[0])
+                    if not subnet_ids:
+                        raise Exception("REMEDIATION FAILED. {} LAMBDA FUNCTION ACCOUNT DOES NOT HAVE A SUBNET ".format(context.function_name))  
+                    security_group_ids = list_security_groups(vpc_ids[0])
+                    if not security_group_ids:
+                        raise Exception("REMEDIATION FAILED. {} LAMBDA FUNCTION ACCOUNT DOES NOT HAVE A SECURITY GROUP ".format(context.function_name))  
+
+                    # Return two subnets for availability if possible
+                    if len(subnet_ids) > 1:
+                        subnet_ids = subnet_ids[:2]
+                    elif len(subnet_ids) == 1:
+                        subnet_ids = subnet_ids[0]
+
+                    return {
+                        "VPCID": vpc_ids[0],
+                        "SubnetIDs": subnet_ids,
+                        "SecurityGroupIDs": security_group_ids[:1]
+                    }        
+            outputs:
+              - Name: SecurityGroupIDs
+                Selector: $.Payload.SecurityGroupIDs
+                Type: StringList
+              - Name: SubnetIDs
+                Selector: $.Payload.SubnetIDs
+                Type: StringList             
+          -
+            name: UpdateFunctionVPCConfiguration
+            action: "aws:executeAwsApi"
+            description: |
+              ## UpdateFunctionVPCConfiguration
+              Makes UpdateFunctionConfiguration API call using AWS Lambda function name to update Amazon VPC Configuration i.e, SubnetIds and SecurityGroupIds.
+              ## Outputs
+              * Response: The standard response from the UpdateFunctionConfiguration API call.
+            timeoutSeconds: 600
+            isEnd: false
+            inputs:
+              Service: lambda
+              Api: UpdateFunctionConfiguration
+              FunctionName: "{{FunctionName}}"
+              VpcConfig:
+                SecurityGroupIds: "{{ VPCLookUp.SecurityGroupIDs }}"
+                SubnetIds: "{{ VPCLookUp.SubnetIDs }}"
+            outputs:
+              - Name: Response
+                Selector: $
+                Type: StringMap
+          -
+            name: VerifyFunctionUpdateStatus
+            action: "aws:waitForAwsResourceProperty"
+            timeoutSeconds: 600
+            isEnd: false
+            description: |
+              ## VerifyFunctionUpdateStatus
+              Waits for the given AWS Lambda function last update status set to be "Successful".
+            inputs:
+              Service: lambda
+              Api: GetFunction
+              FunctionName: "{{FunctionName}}"
+              PropertySelector: "$.Configuration.LastUpdateStatus"
+              DesiredValues:
+                - "Successful"
+
+          - name: VerifyLambdaVPCConfiguration
+            action: "aws:executeScript"
+            description: |
+              ## VerifyLambdaVPCConfiguration
+              Verifies the given AWS Lambda function VPC configuration.
+              ## Outputs
+              * Output: The standard HTTP response from the GetFunctionConfiguration API call.
+            isEnd: true
+            timeoutSeconds: 600
+            inputs:
+              Runtime: python3.7
+              Handler: handler
+              InputPayload:
+                FunctionName: "{{ FunctionName }}"
+                SecurityGroupIds: "{{ VPCLookUp.SecurityGroupIDs }}"
+                SubnetIds: "{{ VPCLookUp.SubnetIDs }}"
+              Script: |-
+                import boto3
+                def verifySecurityGroups(lambda_config_details, security_group_ids):
+                  for security_group in security_group_ids:
+                    if security_group not in lambda_config_details['VpcConfig']['SecurityGroupIds']:
+                      return False
+                  return True
+
+                def verifySubnetIds(lambda_config_details, subnet_ids):
+                  for subnet_id in subnet_ids:
+                    if subnet_id not in lambda_config_details['VpcConfig']['SubnetIds']:
+                      return False
+                  return True
+
+                def handler(event, context):
+                  lambda_client = boto3.client("lambda")
+                  function_name = event["FunctionName"]
+                  security_group_ids = event["SecurityGroupIds"]
+                  subnet_ids = event["SubnetIds"]
+                  lambda_config_details = lambda_client.get_function_configuration(FunctionName=function_name)
+                  if verifySecurityGroups(lambda_config_details,security_group_ids) and verifySubnetIds(lambda_config_details,subnet_ids):
+                    return {
+                        "output": {
+                            "Message": "Verification of update Amazon VPC configuration for AWS Lambda function {} is successful.".format(function_name),
+                            "HTTPResponse": lambda_config_details['ResponseMetadata']
+                        }
+                      }
+                  raise Exception("VERIFICATION FAILED. UPDATE AMAZON VPC CONFIGURATION FOR AWS LAMBDA FUNCTION {} IS FAILED".format(function_name))         
+            outputs:
+              - Name: Output
+                Selector: $.Payload.output
+                Type: StringMap

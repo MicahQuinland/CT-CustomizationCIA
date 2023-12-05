@@ -1,0 +1,39 @@
+{
+  "Version": "1.0",
+  "Parameters": {
+    "RuleName": "lmd001-config-lambda-inside-vpc",
+    "Description": "lmd001-config-lambda-inside-vpc",
+    "SourceRuntime": null,
+    "CodeKey": null,
+    "InputParameters": "{}",
+    "OptionalParameters": "{}",
+    "SourceEvents": "AWS::Lambda::Function",
+    "SourceIdentifier": "LAMBDA_INSIDE_VPC",
+    "Remediation": {
+      "Automatic": true,
+      "ConfigRuleName": "lmd001-config-lambda-inside-vpc",
+      "MaximumAutomaticAttempts": "1",
+      "Parameters": {
+        "AutomationAssumeRole": {
+          "StaticValue": {
+            "Values": [
+              {
+                "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/AutomationServiceRole"
+              }
+            ]
+          }
+        },
+        "FunctionName": {
+          "ResourceValue": {
+            "Value": "RESOURCE_ID"
+          }
+        }
+      },
+      "ResourceType": "AWS::Lambda::Function",
+      "RetryAttemptSeconds": "60",
+      "TargetId": "lmd001-MoveLambdaToVPC",
+      "TargetType": "SSM_DOCUMENT"
+    }
+  },
+  "Tags": "[]"
+}
