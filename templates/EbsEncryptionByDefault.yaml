@@ -1,0 +1,69 @@
+Description: >-
+  Enables default EBS encryption settings.
+  You can only launch instance types that support EBS encryption once you enable account level encryption.
+  See EBS Encryption docs for more info:
+  https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html
+Resources:
+  EbsEncryptionByDefault:
+    Type: Custom::EbsEncryptionByDefault
+    Properties:
+      ServiceToken: !Sub '${EbsEncryptionByDefaultLambdaFunction.Arn}'
+
+  EbsEncryptionByDefaultLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !Sub '${EbsEncryptionByDefaultLambdaExecutionRole.Arn}'
+      Handler: index.handler
+      Timeout: 20
+      Runtime: python3.12
+      Code:
+        ZipFile: !Sub |
+          import boto3
+          import os
+          import cfnresponse
+          def handler(event, context):
+              try:
+                  ec2 = boto3.client("ec2", region_name="${AWS::Region}")
+                  res = ec2.enable_ebs_encryption_by_default()
+                  res.update(ec2.modify_ebs_default_kms_key_id(KmsKeyId="alias/aws/ebs"))
+                  res.pop("ResponseMetadata", None)
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS, res)
+              except Exception as e:
+                  print("Error:", repr(e))
+                  cfnresponse.send(event, context, cfnresponse.FAILED, {}, reason=repr(e))
+  EbsEncryptionByDefaultLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: ['sts:AssumeRole']
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  # - ec2:DisableEbsEncryptionByDefault
+                  - ec2:EnableEbsEncryptionByDefault
+                  - ec2:GetEbsDefaultKmsKeyId
+                  - ec2:GetEbsEncryptionByDefault
+                  - ec2:ModifyEbsDefaultKmsKeyId
+                  - ec2:ResetEbsDefaultKmsKeyId
+                Resource: '*'
+
+Outputs:
+  EbsEncryptionByDefault:
+    Description: The updated status of encryption by default.
+    Value:
+      !Sub '${EbsEncryptionByDefault.EbsEncryptionByDefault}'
+  EbsDefaultKmsKeyArn:
+    Description: The Amazon Resource Name (ARN) of the default CMK for encryption by default.
+    Value:
+      !Sub '${EbsEncryptionByDefault.KmsKeyId}'

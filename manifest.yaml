@@ -108,26 +108,26 @@ resources:
   #   regions:
   #     - us-east-1
 
-  - name: regional-fms2-testing-use1
-    resource_file: ./templates/wafv2/fms-regional-waf-validation.yaml
-    parameters:
-      - parameter_key: IncludeList
-        parameter_value: [954102277183,423596826538,869465339841]
-    deploy_method: stack_set
-    deployment_targets:
-      accounts: 
-        - 423596826538
-    regions:
-      - us-east-1
+  # - name: regional-fms2-testing-use1
+  #   resource_file: ./templates/wafv2/fms-regional-waf-validation.yaml
+  #   parameters:
+  #     - parameter_key: IncludeList
+  #       parameter_value: [954102277183,423596826538,869465339841]
+  #   deploy_method: stack_set
+  #   deployment_targets:
+  #     accounts: 
+  #       - 423596826538
+  #   regions:
+  #     - us-east-1
 
-  - name: global-fms2-testing-use1
-    resource_file: ./templates/wafv2/fms-global-waf-validation.yaml
-    parameters:
-      - parameter_key: IncludeList
-        parameter_value: [954102277183,423596826538,869465339841]
-    deploy_method: stack_set
-    deployment_targets:
-      accounts: 
-        - 423596826538
-    regions:
-      - us-east-1
+  # - name: global-fms2-testing-use1
+  #   resource_file: ./templates/wafv2/fms-global-waf-validation.yaml
+  #   parameters:
+  #     - parameter_key: IncludeList
+  #       parameter_value: [954102277183,423596826538,869465339841]
+  #   deploy_method: stack_set
+  #   deployment_targets:
+  #     accounts: 
+  #       - 423596826538
+  #   regions:
+  #     - us-east-1
